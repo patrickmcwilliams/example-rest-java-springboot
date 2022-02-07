@@ -1,7 +1,5 @@
 package com.crowdstreet.demo.data.model;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

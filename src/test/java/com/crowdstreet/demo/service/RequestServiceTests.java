@@ -4,7 +4,6 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import com.crowdstreet.demo.data.model.ExampleRequest;
@@ -46,8 +45,12 @@ public class RequestServiceTests {
         try {
             doNothing().when(exampleAPI).sendRequest(exampleArgCapture.capture());
             when(statusService.addStatus(statusArgCapture.capture())).thenReturn(new Long(1));
-            long id = requestService.makeRequest(new Request());
+            Request request = new Request();
+            request.setBody("test");
+            long id = requestService.makeRequest(request);
+            //TODO: break up tests
             assert(id == 1);
+            assert(exampleArgCapture.getValue().getBody().getBody().equals("test"));
             assert(exampleArgCapture.getValue().getCallback().equals("/callback/1"));
             assert(statusArgCapture.getValue().getStatus() == StatusTypes.INIT);
         } catch (Exception e) {

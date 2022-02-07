@@ -1,7 +1,6 @@
 package com.crowdstreet.demo.vendor;
 
 import com.crowdstreet.demo.data.model.ExampleRequest;
-import com.crowdstreet.demo.data.model.Request;
 import com.crowdstreet.demo.exceptions.APIException;
 import com.crowdstreet.demo.service.HTTPService;
 
