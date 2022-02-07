@@ -62,7 +62,6 @@ public class StatusServiceTests {
     public void testPostCallbackWithWrongStatus() {
         ArgumentCaptor<Long> statusArgCapture = ArgumentCaptor.forClass(Long.class);
         Optional<Status> statusOptional = Optional.of(new Status());
-        when(statusRepository.findById(statusArgCapture.capture())).thenReturn(statusOptional);
         try {
             statusService.postCallback(StatusTypes.ERROR.toString(), new Long(1));
             fail("should have excepted");
