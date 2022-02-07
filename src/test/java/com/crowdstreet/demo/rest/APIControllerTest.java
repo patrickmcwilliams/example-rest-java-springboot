@@ -1,16 +1,24 @@
 package com.crowdstreet.demo.rest;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.crowdstreet.demo.data.model.Request;
+import java.util.Optional;
 
+import com.crowdstreet.demo.data.dao.StatusRepository;
+import com.crowdstreet.demo.data.model.Request;
+import com.crowdstreet.demo.data.model.Status;
+import com.crowdstreet.demo.data.model.Status.StatusTypes;
+
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -21,6 +29,8 @@ public class APIControllerTest {
 
 	@Autowired
 	private MockMvc mvc;
+	@Autowired
+	StatusRepository statusRepository;
 
 	@Test
 	public void getHello() throws Exception {
@@ -47,6 +57,36 @@ public class APIControllerTest {
 			.contentType(MediaType.APPLICATION_JSON)
 			.content(request.toString()))
 			.andExpect(status().is(400));
+	}
+
+	@Test
+	public void testCallbackPost() throws Exception {
+		this.testRequestRoute();
+		mvc.perform(MockMvcRequestBuilders.post("/callback/1")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.content(StatusTypes.STARTED.toString()))
+			.andExpect(status().isNoContent());
+		Optional<Status> status =	statusRepository.findById(new Long(1));
+		if (status.isPresent()){
+			assert(status.get().getStatus().equals(StatusTypes.STARTED));
+		}
+		else{
+			fail("callback did not update or retrieve data");
+		}
+	}
+
+	@Test
+	public void testCallbackPostNotStartedType() throws Exception {
+		this.testRequestRoute();
+		try {
+			mvc.perform(MockMvcRequestBuilders.post("/callback/1")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.content(StatusTypes.ERROR.toString()))
+			.andExpect(status().isBadGateway());
+		} catch (Exception e) {
+			fail("STARTED should be the only accepted body");
+		}
+
 	}
 
 	// @Test

@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.crowdstreet.demo.data.dao.StatusRepository;
 import com.crowdstreet.demo.data.model.Status;
+import com.crowdstreet.demo.data.model.Status.StatusTypes;
 import com.crowdstreet.demo.exceptions.DAOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,18 @@ public class StatusService {
 
 	}
 	
-	public Status getCount(long id) {
+	public void postCallback(String type, long id) throws DAOException, Exception {
+		if (!type.equals(StatusTypes.STARTED.toString())){
+			throw new Exception("Need to use PUT for any status other than STARTED");
+		}
         Optional<Status> response = statusRepository.findById(id);
 		if (response.isPresent()){
-			return response.get();
+			Status newStatus = response.get();
+			newStatus.setStatus(StatusTypes.STARTED);
+			statusRepository.save(newStatus);
 		}
 		else {
-			return new Status();
+			throw new DAOException("Error accessing database");
 		}
 	}
     

@@ -3,8 +3,11 @@ package com.crowdstreet.demo.service;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
+import java.util.Optional;
+
 import com.crowdstreet.demo.data.dao.StatusRepository;
 import com.crowdstreet.demo.data.model.Status;
+import com.crowdstreet.demo.data.model.Status.StatusTypes;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -38,6 +41,31 @@ public class StatusServiceTests {
             assert(result == 0);
         } catch (Exception e) {
             fail("should not have excepted");
+        }
+    }
+
+    @Test
+    public void testPostCallback() {
+        ArgumentCaptor<Long> statusArgCapture = ArgumentCaptor.forClass(Long.class);
+        Optional<Status> statusOptional = Optional.of(new Status());
+        when(statusRepository.findById(statusArgCapture.capture())).thenReturn(statusOptional);
+        try {
+            statusService.postCallback(StatusTypes.STARTED.toString(), new Long(1));
+        } catch (Exception e) {
+            fail("should not have excepted");
+        }
+    }
+
+    @Test
+    public void testPostCallbackWithWrongStatus() {
+        ArgumentCaptor<Long> statusArgCapture = ArgumentCaptor.forClass(Long.class);
+        Optional<Status> statusOptional = Optional.of(new Status());
+        when(statusRepository.findById(statusArgCapture.capture())).thenReturn(statusOptional);
+        try {
+            statusService.postCallback(StatusTypes.ERROR.toString(), new Long(1));
+            fail("should have excepted");
+        } catch (Exception e) {
+            assert(e.getMessage().equals("Need to use PUT for any status other than STARTED"));
         }
     }
 }
