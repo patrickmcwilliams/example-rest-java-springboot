@@ -6,9 +6,11 @@ import com.crowdstreet.demo.data.dao.StatusRepository;
 import com.crowdstreet.demo.data.model.Status;
 import com.crowdstreet.demo.data.model.Status.StatusTypes;
 import com.crowdstreet.demo.exceptions.DAOException;
+import com.crowdstreet.demo.data.model.CallBackRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class StatusService {
@@ -30,15 +32,30 @@ public class StatusService {
 		if (!type.equals(StatusTypes.STARTED.toString())){
 			throw new Exception("Need to use PUT for any status other than STARTED");
 		}
-        Optional<Status> response = statusRepository.findById(id);
+		Optional<Status> response = statusRepository.findById(id);
 		if (response.isPresent()){
 			Status newStatus = response.get();
 			newStatus.setStatus(StatusTypes.STARTED);
 			statusRepository.save(newStatus);
 		}
 		else {
-			throw new DAOException("Error accessing database");
+			throw new DAOException("Could not find record");
 		}
 	}
-    
+
+	public void putCallback(CallBackRequest status, long id) throws DAOException, Exception {
+		if (status.getStatus().equals(StatusTypes.STARTED)){
+			throw new Exception("Need to use POST for status STARTED");
+		}
+        Optional<Status> response = statusRepository.findById(id);
+		if (response.isPresent()){
+			Status newStatus = response.get();
+			newStatus.setStatus(status.getStatus());
+			newStatus.setDetail(status.getDetail());
+			statusRepository.save(newStatus);
+		}
+		else {
+			throw new DAOException("Could not find record");
+		}
+	}
 }

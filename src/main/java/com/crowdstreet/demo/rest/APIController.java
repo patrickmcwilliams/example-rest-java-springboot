@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,6 +16,8 @@ import com.crowdstreet.demo.exceptions.DAOException;
 import com.crowdstreet.demo.exceptions.RequestException;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.crowdstreet.demo.data.model.CallBackRequest;
 import com.crowdstreet.demo.data.model.Request;
 import com.crowdstreet.demo.data.model.Status.StatusTypes;
 import com.crowdstreet.demo.service.StatusService;
@@ -68,6 +71,23 @@ public class APIController {
 		}
 	}
 
+	@PutMapping(path="/callback/{id}",
+	consumes = MediaType.APPLICATION_JSON_VALUE,
+	produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<Void> putCallback(@RequestBody CallBackRequest status, @PathVariable long id) {
+		try {
+			statusService.putCallback(status, id);
+			return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+		} 
+		catch (DAOException e) {
+			throw new ResponseStatusException(
+				HttpStatus.BAD_REQUEST, e.getMessage(), e);
+		}
+		catch (Exception e){
+			throw new ResponseStatusException(
+				HttpStatus.BAD_GATEWAY, e.getMessage(), e);
+		}
+	}
 	// @RequestMapping(value = "")
 	// public ResponseEntity<String> indexBase(final HttpServletRequest request){
 	
