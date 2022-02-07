@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.crowdstreet.demo.data.model.Request;
-import com.crowdstreet.demo.data.model.Status;
 
 import org.junit.jupiter.api.Test;
 

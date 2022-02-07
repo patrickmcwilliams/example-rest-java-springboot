@@ -22,7 +22,7 @@ public class Example {
     HTTPService http;
 
     public void sendRequest(ExampleRequest request) throws APIException {
-        if (request.getBody() == null){
+        if (request.getBody().getBody() == null){
             throw new APIException("body cannot be null");
         }
         try {

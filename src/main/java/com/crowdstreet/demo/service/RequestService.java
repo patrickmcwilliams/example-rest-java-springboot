@@ -14,23 +14,17 @@ import com.crowdstreet.demo.exceptions.RequestException;
 public class RequestService {
     private final String CALLBACK_URL = "/callback/";
 
-    private Example exampleAPI;
-    private StatusService statusService;
-
     @Autowired
-    public RequestService(Example exampleAPI, StatusService statusService) {
-        this.exampleAPI = exampleAPI;
-        this.statusService = statusService;
-    }
-
+    private Example exampleAPI;
+    @Autowired
+    private StatusService statusService;
 
     public long makeRequest(Request request) throws RequestException{
         Status status;
         long id;
         try{
             status = new Status(StatusTypes.INIT);
-            statusService.addStatus(status);
-            id = status.getId();
+            id = statusService.addStatus(status);
 
             ExampleRequest exampleRequest = new ExampleRequest();
             exampleRequest.setBody(request);
