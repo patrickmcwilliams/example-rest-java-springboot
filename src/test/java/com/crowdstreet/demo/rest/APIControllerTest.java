@@ -4,7 +4,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.crowdstreet.demo.data.model.Counts;
+import com.crowdstreet.demo.data.model.Request;
+import com.crowdstreet.demo.data.model.Status;
 
 import org.junit.jupiter.api.Test;
 
@@ -25,39 +26,48 @@ public class APIControllerTest {
 	@Test
 	public void getHello() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().string(equalTo("Greetings from Spring Boot!")));
+				.andExpect(status().is(501))
+				.andExpect(content().string(equalTo("no thanks")));
 	}
 
 	@Test
-	public void countInsertPost0() throws Exception {
-		Counts count = new Counts();
-		String countJSON = count.getAsJSON();
-		mvc.perform(MockMvcRequestBuilders.post("/count/insert/")
+	public void testRequestRoute() throws Exception {
+		Request request = new Request();
+		request.setBody("test");
+		mvc.perform(MockMvcRequestBuilders.post("/request")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(countJSON))
+			.content(request.getAsJSON()))
 			.andExpect(status().isOk())
-			.andExpect(content().string(equalTo("Successfully inserted with a value of 0")));
+			.andExpect(content().string(equalTo("1")));
 	}
 
 	@Test
-	public void countInsertPost1() throws Exception {
-		Counts count = new Counts();
-		count.setValue(1);
-		String countJSON = count.getAsJSON();
-		mvc.perform(MockMvcRequestBuilders.post("/count/insert/")
+	public void testRequestRouteBadRequest() throws Exception {
+		Object request = new Object();
+		mvc.perform(MockMvcRequestBuilders.post("/request")
 			.contentType(MediaType.APPLICATION_JSON)
-			.content(countJSON))
-			.andExpect(status().isOk())
-			.andExpect(content().string(equalTo("Successfully inserted with a value of 1")));
+			.content(request.toString()))
+			.andExpect(status().is(400));
 	}
 
-	@Test
-	public void countGet2() throws Exception {
-		this.countInsertPost0();
-		this.countInsertPost1();
-		mvc.perform(MockMvcRequestBuilders.get("/count/2").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(content().string(equalTo("{\"id\":2,\"value\":1}")));
-	}
+	// @Test
+	// public void countInsertPost1() throws Exception {
+	// 	Status count = new Status();
+	// 	count.setStatus(StatusTypes.INIT);
+	// 	String countJSON = count.getAsJSON();
+	// 	mvc.perform(MockMvcRequestBuilders.post("/count/insert/")
+	// 		.contentType(MediaType.APPLICATION_JSON)
+	// 		.content(countJSON))
+	// 		.andExpect(status().isOk())
+	// 		.andExpect(content().string(equalTo("Successfully inserted with a value of 1")));
+	// }
+
+	// @Test
+	// public void countGet2() throws Exception {
+	// 	this.countInsertPost0();
+	// 	this.countInsertPost1();
+	// 	mvc.perform(MockMvcRequestBuilders.get("/count/2").accept(MediaType.APPLICATION_JSON))
+	// 			.andExpect(status().isOk())
+	// 			.andExpect(content().string(equalTo("{\"id\":2,\"value\":1}")));
+	// }
 }

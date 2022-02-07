@@ -36,6 +36,11 @@
 			<version>2.3.12.RELEASE</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+			<version>2.3.12.RELEASE</version>
+		</dependency>
 		<!-- 
 			Should upgrade to recommended version, but 2.x is breaking app 
 			For the sake of demo, vulnerability is out of scope
@@ -62,6 +67,12 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.22</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>2.21.0</version>
 		</dependency>
 
 	</dependencies>
