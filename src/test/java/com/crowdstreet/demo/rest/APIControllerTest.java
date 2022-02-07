@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Optional;
 
 import com.crowdstreet.demo.data.dao.StatusRepository;
+import com.crowdstreet.demo.data.model.CallBackRequest;
 import com.crowdstreet.demo.data.model.Request;
 import com.crowdstreet.demo.data.model.Status;
 import com.crowdstreet.demo.data.model.Status.StatusTypes;
@@ -89,6 +90,25 @@ public class APIControllerTest {
 
 	}
 
+	@Test
+	public void testCallbackPut() throws Exception {
+		this.testRequestRoute();
+		CallBackRequest request = new CallBackRequest();
+		request.setStatus(StatusTypes.COMPLETED);
+		request.setDetail("test detail");
+		mvc.perform(MockMvcRequestBuilders.put("/callback/1")
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.content(request.getAsJSON()))
+			.andExpect(status().isNoContent());
+		Optional<Status> status = statusRepository.findById(new Long(1));
+		if (status.isPresent()){
+			assert(status.get().getStatus().equals(StatusTypes.COMPLETED));
+			assert(status.get().getDetail().equals("test detail"));
+		}
+		else{
+			fail("callback did not update or retrieve data");
+		}
+	}
 	// @Test
 	// public void countInsertPost1() throws Exception {
 	// 	Status count = new Status();
