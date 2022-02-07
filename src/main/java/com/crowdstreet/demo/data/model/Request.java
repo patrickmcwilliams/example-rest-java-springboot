@@ -1,0 +1,13 @@
+package com.crowdstreet.demo.data.model;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@NoArgsConstructor
+public class Request {
+
+    @Getter
+    @Setter
+    private String body;
+}
