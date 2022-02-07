@@ -4,22 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.crowdstreet.demo.exceptions.DAOException;
 import com.crowdstreet.demo.exceptions.RequestException;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.crowdstreet.demo.data.model.CallBackRequest;
 import com.crowdstreet.demo.data.model.Request;
-import com.crowdstreet.demo.data.model.Status.StatusTypes;
+import com.crowdstreet.demo.data.model.Status;
 import com.crowdstreet.demo.service.StatusService;
 import com.crowdstreet.demo.service.RequestService;
 
@@ -88,34 +88,26 @@ public class APIController {
 				HttpStatus.BAD_GATEWAY, e.getMessage(), e);
 		}
 	}
-	// @RequestMapping(value = "")
-	// public ResponseEntity<String> indexBase(final HttpServletRequest request){
-	
-	// 	return new ResponseEntity<String>("no thanks", HttpStatus.NOT_IMPLEMENTED);
-	// }
-	// @RequestMapping(value = "/**/{path:.*}")
-	// public ResponseEntity<String> index(final HttpServletRequest request){
-	
-	// 	return indexBase(request);
-	// }
 
-	// @PostMapping(path = "/count/insert", 
-	//         consumes = MediaType.APPLICATION_JSON_VALUE, 
-	//         produces = MediaType.APPLICATION_JSON_VALUE)
-	// public String testInsert(@RequestBody Status req) {
-		
-	// 	try {
-	// 		long success = countService.addStatus(req);
-	// 		return String.valueOf(success);
-	// 	} catch (DAOException e) {
-	// 		return e.getMessage();
-	// 	}
-	// }
-	
-	// @GetMapping("/count/{id}")
-	// public ResponseEntity<Status> getCount(@PathVariable long id) {
-	// 	Status response = countService.getCount(id);
-	// 	return new ResponseEntity<>(response, HttpStatus.OK);
-	// }
+	@GetMapping(path="/callback/{id}",
+	produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Status> getStatus( @PathVariable long id) {
+		try {
+			Status status = statusService.getStatus(id);
+			return new ResponseEntity<Status>(status, HttpStatus.OK);
+		} 
+		catch (DAOException e) {
+			throw new ResponseStatusException(
+				HttpStatus.BAD_REQUEST, e.getMessage(), e);
+		}
+		catch (Exception e){
+			throw new ResponseStatusException(
+				HttpStatus.BAD_GATEWAY, e.getMessage(), e);
+		}
+	}
 
+	@RequestMapping(value="**",method = RequestMethod.GET)
+	public ResponseEntity<String> getCatchall(){
+	return new ResponseEntity<String>("no thanks", HttpStatus.FORBIDDEN);
+}
 }

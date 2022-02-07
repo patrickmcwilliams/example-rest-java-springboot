@@ -1,7 +1,6 @@
 package com.crowdstreet.demo.service;
 
 import static org.junit.Assert.fail;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
