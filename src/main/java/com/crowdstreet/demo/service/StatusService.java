@@ -58,4 +58,14 @@ public class StatusService {
 			throw new DAOException("Could not find record");
 		}
 	}
+
+	public Status getStatus(long id) throws DAOException, Exception {
+        Optional<Status> response = statusRepository.findById(id);
+		if (response.isPresent()){
+			return response.get();
+		}
+		else {
+			throw new DAOException("Could not find record");
+		}
+	}
 }

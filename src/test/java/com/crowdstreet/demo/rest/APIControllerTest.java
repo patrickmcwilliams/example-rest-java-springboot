@@ -12,14 +12,12 @@ import com.crowdstreet.demo.data.model.CallBackRequest;
 import com.crowdstreet.demo.data.model.Request;
 import com.crowdstreet.demo.data.model.Status;
 import com.crowdstreet.demo.data.model.Status.StatusTypes;
-
-import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -33,10 +31,22 @@ public class APIControllerTest {
 	@Autowired
 	StatusRepository statusRepository;
 
+	@BeforeClass
+	public void setup() throws Exception{
+		statusRepository.deleteAll();
+		Request request = new Request();
+		request.setBody("test");
+		mvc.perform(MockMvcRequestBuilders.post("/request")
+			.contentType(MediaType.APPLICATION_JSON)
+			.content(request.getAsJSON()))
+			.andExpect(status().isOk())
+			.andExpect(content().string(equalTo("1")));
+	}
+
 	@Test
 	public void getHello() throws Exception {
 		mvc.perform(MockMvcRequestBuilders.get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().is(501))
+				.andExpect(status().is(403))
 				.andExpect(content().string(equalTo("no thanks")));
 	}
 
@@ -62,7 +72,6 @@ public class APIControllerTest {
 
 	@Test
 	public void testCallbackPost() throws Exception {
-		this.testRequestRoute();
 		mvc.perform(MockMvcRequestBuilders.post("/callback/1")
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.content(StatusTypes.STARTED.toString()))
@@ -78,7 +87,6 @@ public class APIControllerTest {
 
 	@Test
 	public void testCallbackPostNotStartedType() throws Exception {
-		this.testRequestRoute();
 		try {
 			mvc.perform(MockMvcRequestBuilders.post("/callback/1")
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -92,7 +100,6 @@ public class APIControllerTest {
 
 	@Test
 	public void testCallbackPut() throws Exception {
-		this.testRequestRoute();
 		CallBackRequest request = new CallBackRequest();
 		request.setStatus(StatusTypes.COMPLETED);
 		request.setDetail("test detail");
@@ -109,24 +116,21 @@ public class APIControllerTest {
 			fail("callback did not update or retrieve data");
 		}
 	}
-	// @Test
-	// public void countInsertPost1() throws Exception {
-	// 	Status count = new Status();
-	// 	count.setStatus(StatusTypes.INIT);
-	// 	String countJSON = count.getAsJSON();
-	// 	mvc.perform(MockMvcRequestBuilders.post("/count/insert/")
-	// 		.contentType(MediaType.APPLICATION_JSON)
-	// 		.content(countJSON))
-	// 		.andExpect(status().isOk())
-	// 		.andExpect(content().string(equalTo("Successfully inserted with a value of 1")));
-	// }
 
-	// @Test
-	// public void countGet2() throws Exception {
-	// 	this.countInsertPost0();
-	// 	this.countInsertPost1();
-	// 	mvc.perform(MockMvcRequestBuilders.get("/count/2").accept(MediaType.APPLICATION_JSON))
-	// 			.andExpect(status().isOk())
-	// 			.andExpect(content().string(equalTo("{\"id\":2,\"value\":1}")));
-	// }
+	@Test
+	public void testGetStatus() throws Exception {
+		this.testCallbackPut();
+
+		mvc.perform(MockMvcRequestBuilders.get("/callback/1"))
+			.andExpect(status().isOk())
+			.andExpect(content().string("{\"id\":1,\"status\":\"COMPLETED\",\"detail\":\"test detail\"}"));
+		Optional<Status> status = statusRepository.findById(new Long(1));
+		if (status.isPresent()){
+			assert(status.get().getStatus().equals(StatusTypes.COMPLETED));
+			assert(status.get().getDetail().equals("test detail"));
+		}
+		else{
+			fail("callback did not update or retrieve data");
+		}
+	}
 }
