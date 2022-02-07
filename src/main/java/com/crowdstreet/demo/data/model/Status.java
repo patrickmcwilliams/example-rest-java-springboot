@@ -13,7 +13,7 @@ import lombok.Setter;
 public class Status extends GetsJSON{
     
     public static enum StatusTypes{
-        INIT, STARTED;
+        INIT, STARTED, ERROR;
     }
 
     @Id
